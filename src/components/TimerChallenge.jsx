@@ -9,7 +9,7 @@ export default function TimerChallenge({ title, targetTime }) {
 
   const stopTimer = () => {
     setIsRunning(false);
-    resultModalRef.current.showModal();
+    resultModalRef.current.open();
     clearTimeout(timer.current);
   };
 
