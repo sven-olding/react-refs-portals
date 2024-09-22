@@ -2,23 +2,30 @@ import { useRef, useState } from "react";
 import ResultModal from "./ResultModal";
 
 export default function TimerChallenge({ title, targetTime }) {
-  const [isRunning, setIsRunning] = useState(false);
-  const [isExpired, setIsExpired] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(targetTime * 1000);
+
   const timer = useRef();
   const resultModalRef = useRef();
 
+  const isRunning = timeRemaining > 0 && timeRemaining < targetTime * 1000;
+
   const stopTimer = () => {
-    setIsRunning(false);
+    clearInterval(timer.current);
     resultModalRef.current.open();
-    clearTimeout(timer.current);
+  };
+
+  if (timeRemaining <= 0) {
+    stopTimer();
+  }
+
+  const handleReset = () => {
+    setTimeRemaining(targetTime * 1000);
   };
 
   const startTimer = () => {
-    setIsExpired(false);
-    timer.current = setTimeout(() => {
-      setIsExpired(true);
-    }, targetTime * 1000);
-    setIsRunning(true);
+    timer.current = setInterval(() => {
+      setTimeRemaining((prevTimeRemaining) => prevTimeRemaining - 10);
+    }, 10);
   };
 
   const onClickStartStop = () => {
@@ -29,8 +36,9 @@ export default function TimerChallenge({ title, targetTime }) {
     <>
       <ResultModal
         targetTime={targetTime}
-        result={"lost"}
         ref={resultModalRef}
+        timeRemaining={timeRemaining}
+        onReset={handleReset}
       />
       <section className="challenge">
         <h2>{title}</h2>
